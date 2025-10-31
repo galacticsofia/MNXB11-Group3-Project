@@ -18,13 +18,7 @@ double Gaussian(double* x, double* par) {
 
 void plot_results() {
 
-    // --- Clean up previous objects ---
-    if (gROOT->FindObject("c")) delete gROOT->FindObject("c");
-    if (gROOT->FindObject("warm_hist")) delete gROOT->FindObject("warm_hist");
-    if (gROOT->FindObject("cold_hist")) delete gROOT->FindObject("cold_hist");
-    if (gROOT->FindObject("cold_hist_left")) delete gROOT->FindObject("cold_hist_left");
-    if (gROOT->FindObject("cold_hist_right")) delete gROOT->FindObject("cold_hist_right");
-
+    
     // --- Canvas and style ---
     TCanvas *c = new TCanvas("c", "Warmest & Coldest Days", 800, 600);
     gStyle->SetOptStat(0);
@@ -33,7 +27,6 @@ void plot_results() {
     // --- Histograms ---
     TH1F *warm_hist = new TH1F("warm_hist", "Warmest and Coldest Days;Day of Year;Entries", 366, 0.5, 366.5);
     TH1F *cold_hist = new TH1F("cold_hist", "Warmest and Coldest Days;Day of Year;Entries", 366, 0.5, 366.5);
-    TH1F *cold_hist_left = new TH1F("cold_hist_left", "Left", 366, -60.5, 425.5);
     TH1F *cold_hist_right = new TH1F("cold_hist_right", "Right", 366, -60.5, 425.5);
 
     // --- Read CSV file ---
@@ -52,20 +45,18 @@ void plot_results() {
         getline(ss, warm_str, ',');
         getline(ss, cold_str, ',');
 
-        int warm_day = stoi(warm_str);
+        int warm_day = stoi(warm_str); //string to int
         int cold_day = stoi(cold_str);
 
         warm_hist->Fill(warm_day);
         cold_hist->Fill(cold_day);
 
-        // duplicate cold entries for wrapping
-        if (cold_day < 60) cold_hist_right->Fill(cold_day + 366);
-        if (cold_day > 306) cold_hist_right->Fill(cold_day);
+        // duplicate cold entries 
         if (cold_day < 60) {
-            cold_hist_left->Fill(cold_day - 366);  
+            cold_hist_right->Fill(cold_day + 366);  
         }
         if (cold_day > 306) {
-            cold_hist_left->Fill(cold_day);        
+            cold_hist_right->Fill(cold_day);        
         }
 
     }
@@ -81,7 +72,7 @@ void plot_results() {
     cold_hist->SetLineWidth(1);
 
 
-    // --- Draw base histograms ---
+    // --- Draw histograms ---
     cold_hist->Draw("HIST");
     warm_hist->Draw("HIST SAME");
 
@@ -105,11 +96,10 @@ void plot_results() {
     func1->Draw("SAME");
 
 
-    // --- Fit Gaussian to cold days (left) ---
-    TF1 *func2 = new TF1("Gaussian_left", Gaussian, -100, 100, 3);
-    func2->SetParameters(3, 0, 30);   // amplitude, mean, sigma
-    func2->SetParLimits(0, 2, 2.5);  
-    cold_hist_left->Fit(func2, "Q0R");
+    // --- Fit Gaussian to cold days (right) ---
+    TF1 *func2 = new TF1("Gaussian_right", Gaussian, 200, 426, 3);
+    func2->SetParameters(3, 366, 30);   // amplitude, mean, sigma
+    cold_hist_right->Fit(func2, "Q0R");
     func2->SetLineColor(kBlack);
     func2->SetLineWidth(2);
     func2->Draw("SAME");
@@ -120,15 +110,22 @@ void plot_results() {
 
 
 
-    // --- Fit Gaussian to cold days (right) ---
-    TF1 *func3 = new TF1("Gaussian_right", Gaussian, 250, 480, 3);
+    // --- Fit Gaussian to cold days (left) ---
+    TF1 *func3 = new TF1("Gaussian_left", Gaussian, 0, 140, 3);
     func3->FixParameter(0, A);              // same amplitude
     func3->FixParameter(2, s);              // same sigma
-    func3->SetParameter(1, mu + 366);       // shifted center
-    cold_hist_right->Fit(func3, "Q0R");
+    func3->SetParameter(1, mu - 366);       // shifted center
     func3->SetLineColor(kBlack);
     func3->SetLineWidth(2);
     func3->Draw("SAME");
+
+    double warmest_mean = func1->GetParameter(1);      
+    double coldest_mean = func2->GetParameter(1);     
+
+
+    cout << "Warmest day : " << warmest_mean << endl;
+    cout << "Coldest day : " << coldest_mean - 366 << endl;
+
 
     // --- Final update ---
     c->Update();

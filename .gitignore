@@ -1,0 +1,29 @@
+# Compiled Object Files
+*.o
+*.obj
+
+#Compiled Binaries & Executables
+*.out
+*.exe
+*.a
+*.so
+*.dll
+*.dylib
+
+# Project-Specific Binaries ---
+rain_analysis/data_clean/Rain_data_clean
+rain_analysis/analysis/analysis
+
+# ROOT Compilation Artifacts ---
+*.root
+*.pcm
+*.d
+*.clog
+*.so
+*.log
+
+# Temporary / Backup Files ---
+*.tmp
+*.bak
+*~
+*.swp

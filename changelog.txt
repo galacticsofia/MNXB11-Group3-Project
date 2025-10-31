@@ -1,4 +1,18 @@
+2025-10-30 Akash Arjun ak1767ar-s@student.lu.se
+    1. Downloaded raw data about precipitation and temperature from https://www.smhi.se/data/nederbord-och-fuktighet/nederbord/griddad-nederbord--och-temperaturdata of Lund and Uppsala.
+    2. Cleaned the file into Rain_temperature_cleaned.csv
+    3. Created a script that analysis the file regarding monthly rainfall, number of rainy days in the month, maximum and minimum temperature of the month.
+    4. Created a bash file to store the analysed data for a particular City and Year into results file at once
+    5.Created root file to plot data and bash script to run the root file on all analysed csv files in results
+    6. Plots all stored as png in figures folder
+ 
 2025-10-25 Ossian Malmborg <os2287ma-s@student.lu.se>
     1. Added the Falun and Falsterbo comparison code
     2. Cleaned some files, especially Falstebro to Falsterbo
     3. Added comments to clarify the code
+2025-10-25 Aleksei Jemeljanov <al2515je-s@student.lu.se>
+    1. Added the file warmest_cldest.cxx
+    2. Added the file warmest_plot.cxx
+    3. Added comments to clarify the code
+2025-10-22 Aleksei Jemeljanov <al2515je-s@student.lu.se>
+    1. Added filest for cleaning
